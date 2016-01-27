@@ -1,0 +1,8 @@
+﻿{
+  "AppSettings": {
+    "SiteEmailAddress": "alex@alex.com"
+  },
+  "Data": {
+    "WorldContectConnection": "Server=(localdb)\\Projects;Database=TheWorld;Trusted_Connection=true;MultipleActiveResultSets=true"
+  }
+}
