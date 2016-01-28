@@ -14,6 +14,7 @@ namespace TheWorld
     using Microsoft.Extensions.PlatformAbstractions;
     using Models;
     using Newtonsoft.Json.Serialization;
+    using Services.CoordinatesService;
     using ViewModels;
 
     public class Startup
@@ -50,6 +51,7 @@ namespace TheWorld
 
             services.AddScoped<IMailService, DebugMailService>();
             services.AddScoped<IWorldRepository, WorldRepository>();
+            services.AddScoped<CoordService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

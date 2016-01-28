@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using AutoMapper;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Extensions.Logging;
     using Models;
+    using Services.CoordinatesService;
     using ViewModels;
 
     [Route("api/trips/{tripName}")]
@@ -15,11 +17,13 @@
     {
         private readonly IWorldRepository repository;
         private readonly ILogger<StopController> logger;
+        private readonly CoordService cordService;
 
-        public StopController(IWorldRepository repository, ILogger<StopController> logger)
+        public StopController(IWorldRepository repository, ILogger<StopController> logger, CoordService cordService)
         {
             this.repository = repository;
             this.logger = logger;
+            this.cordService = cordService;
         }
 
         [HttpGet]
@@ -52,7 +56,7 @@
         }
 
         [HttpPost]
-        public JsonResult Post(string tripName, [FromBody] StopViewModel vm)
+        public async Task<JsonResult> Post(string tripName, [FromBody] StopViewModel vm)
         {
             try
             {
@@ -62,6 +66,16 @@
                     var stop = Mapper.Map<Stop>(vm);
 
                     // Lookup Geocordinates
+                    var cordResult = await this.cordService.Lookup(stop.Name);
+
+                    stop.Latitude = cordResult.Latitude;
+                    stop.Longtitude = cordResult.Longtitude;
+
+                    if (!cordResult.Success)
+                    {
+                        this.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        return Json(cordResult.Message);
+                    }
 
                     // Save to db
                     this.repository.AddStop(tripName, stop);
