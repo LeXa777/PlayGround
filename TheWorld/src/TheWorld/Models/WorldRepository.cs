@@ -66,6 +66,7 @@ namespace TheWorld.Models
         public void AddStop(string tripName, Stop stop)
         {
             var trip = GetTripByName(tripName);
+            trip.Stops.Add(stop);
             stop.Order = trip.Stops.Max(s => s.Order) + 1;
             this.context.Stops.Add(stop);
         }
