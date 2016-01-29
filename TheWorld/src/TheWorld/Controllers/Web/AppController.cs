@@ -2,7 +2,7 @@
 {
     using System;
     using Microsoft.AspNet.Mvc;
-    using System.Linq;
+    using Microsoft.AspNet.Authorization;
     using Models;
     using Services.MailService;
     using ViewModels;
@@ -19,6 +19,12 @@
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Trips()
         {
             var trips = this.repository.GetAllTripsWithStops();
             return View(trips);
