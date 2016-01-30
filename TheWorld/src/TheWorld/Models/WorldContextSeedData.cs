@@ -3,25 +3,42 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNet.Identity;
 
     public class WorldContextSeedData
     {
         private readonly WorldContext context;
+        private readonly UserManager<WorldUser> userManager;
 
-        public WorldContextSeedData(WorldContext context)
+        public WorldContextSeedData(WorldContext context, UserManager<WorldUser> userManager)
         {
             this.context = context;
+            this.userManager = userManager;
         }
 
-        public void EnsureSeedData()
+        public async Task EnsureSeedDataAsync()
         {
+            var email = "alex@example.com";
+
+            if (await this.userManager.FindByEmailAsync(email) == null)
+            {
+                var newUser = new WorldUser
+                {
+                    UserName = "Alex",
+                    Email = email
+                };
+
+                await this.userManager.CreateAsync(newUser, "password");
+            }
+
             if (!this.context.Trips.Any())
             {
                 var usTrip = new Trip
                 {
                     Name = "US Trip",
                     Created = DateTime.UtcNow,
-                    UserName = "",
+                    UserName = "Alex",
                     Stops = new List<Stop>
                     {
                         new Stop() {  Name = "Atlanta, GA", Arrival = new DateTime(2014, 6, 4), Latitude = 33.748995, Longtitude = -84.387982, Order = 0 },
@@ -37,7 +54,7 @@
                 {
                     Name = "World Trip",
                     Created = DateTime.UtcNow,
-                    UserName = "",
+                    UserName = "Alex",
                     Stops = new List<Stop>
                     {
                         new Stop() { Order = 0, Latitude =  33.748995, Longtitude =  -84.387982, Name = "Atlanta, Georgia", Arrival = DateTime.Parse("Jun 3, 2014") },

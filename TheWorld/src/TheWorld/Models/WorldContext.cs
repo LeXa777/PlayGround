@@ -1,9 +1,9 @@
 ﻿namespace TheWorld.Models
 {
-    using System;
+    using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.Data.Entity;
 
-    public class WorldContext : DbContext
+    public class WorldContext : IdentityDbContext<WorldUser>
     {
 
         public WorldContext()
