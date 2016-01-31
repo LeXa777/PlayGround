@@ -57,18 +57,35 @@ namespace TheWorld.Models
             return this.context.SaveChanges() > 0;
         }
 
-        public Trip GetTripByName(string tripName)
+        public Trip GetTripByName(string tripName, string name)
         {
             return this.context.Trips
-                .Include(t => t.Stops).FirstOrDefault(t => t.Name.ToLower() == tripName.ToLower());
+                .Include(t => t.Stops)
+                .FirstOrDefault(t => t.Name.ToLower() == tripName.ToLower() && t.UserName == name);
         }
 
-        public void AddStop(string tripName, Stop stop)
+        public void AddStop(string tripName, string user, Stop stop)
         {
-            var trip = GetTripByName(tripName);
+            var trip = GetTripByName(tripName, user);
             trip.Stops.Add(stop);
             stop.Order = trip.Stops.Max(s => s.Order) + 1;
             this.context.Stops.Add(stop);
+        }
+
+        public IEnumerable<Trip> GetUserTripsWithStops(string name)
+        {
+            try
+            {
+                return this.context.Trips
+                .Include(t => t.Stops)
+                .OrderBy(t => t.Name)
+                .Where(t => t.UserName == name).ToList();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Could not get trips frin db", ex);
+            }
+            return new List<Trip>();
         }
     }
 }

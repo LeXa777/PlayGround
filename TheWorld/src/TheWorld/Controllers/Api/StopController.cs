@@ -6,12 +6,14 @@
     using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
+    using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Extensions.Logging;
     using Models;
     using Services.CoordinatesService;
     using ViewModels;
 
+    [Authorize]
     [Route("api/trips/{tripName}")]
     public class StopController : Controller
     {
@@ -37,7 +39,7 @@
 
             try
             {
-                var trip = this.repository.GetTripByName(tripName);
+                var trip = this.repository.GetTripByName(tripName, this.User.Identity.Name);
 
                 if (trip == null)
                 {
@@ -78,7 +80,7 @@
                     }
 
                     // Save to db
-                    this.repository.AddStop(tripName, stop);
+                    this.repository.AddStop(tripName, this.User.Identity.Name, stop);
 
                     if (this.repository.SaveAll())
                     {

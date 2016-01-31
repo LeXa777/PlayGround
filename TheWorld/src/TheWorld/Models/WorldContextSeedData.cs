@@ -29,7 +29,7 @@
                     Email = email
                 };
 
-                await this.userManager.CreateAsync(newUser, "password");
+                var results = await this.userManager.CreateAsync(newUser, "p@SSw0rd");
             }
 
             if (!this.context.Trips.Any())
