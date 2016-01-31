@@ -4,11 +4,13 @@
     using System.Collections.Generic;
     using System.Net;
     using AutoMapper;
+    using Microsoft.AspNet.Authorization;
     using Microsoft.AspNet.Mvc;
     using Microsoft.Extensions.Logging;
     using Models;
     using ViewModels;
 
+    [Authorize]
     [Route("api/trips")]
     public class TripController : Controller
     {
@@ -26,8 +28,9 @@
         {
             try
             {
-                var trips = Mapper.Map<IEnumerable<TripViewModel>>(this.repository.GetAllTripsWithStops());
-                return Json(trips);
+                var trips = this.repository.GetUserTripsWithStops(User.Identity.Name);
+                var results = Mapper.Map<IEnumerable<TripViewModel>>(trips);
+                return Json(results);
             }
             catch (Exception ex)
             {
@@ -44,6 +47,7 @@
                 if (this.ModelState.IsValid)
                 {
                     var trip = Mapper.Map<Trip>(vm);
+                    trip.UserName = this.User.Identity.Name;
 
                     // Save to db
                     this.logger.LogInformation("Attempting to save to db");
