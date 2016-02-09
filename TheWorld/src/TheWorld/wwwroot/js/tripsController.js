@@ -16,5 +16,16 @@
                 created: new Date()
             }
         ];
+
+        vm.newTrip = {};
+
+        vm.addTrip = function () {
+            vm.trips.push({
+                name: vm.newTrip.name,
+                created: new Date()
+            });
+
+            vm.newTrip = {};
+        };
     }
 })();
