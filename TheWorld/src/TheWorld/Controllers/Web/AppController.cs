@@ -26,8 +26,7 @@
         [Authorize]
         public IActionResult Trips()
         {
-            var trips = this.repository.GetAllTripsWithStops();
-            return View(trips);
+            return View();
         }
 
         public IActionResult About()
