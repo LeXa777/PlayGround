@@ -4,9 +4,24 @@
     angular.module("app-trips").
         controller("tripEditorController", tripEditorController);
 
-    function tripEditorController() {
+    function tripEditorController($routeParams, $http) {
         var vm = this;
 
-        vm.name = "Alex";
+        vm.tripName = $routeParams.tripName;
+
+        vm.stops = [];
+        vm.errorMessage = "";
+        vm.isBusy = true;
+
+        $http.get("/api/trips/" + vm.tripName)
+            .then(function (response) {
+                angular.copy(response.data, vm.stops);
+            },
+            function () {
+                vm.errorMessage = "Failed to load the stops";
+            })
+            .finally(function () {
+                vm.isBusy = false;
+            });
     }
 })();
