@@ -12,21 +12,32 @@
         vm.newTrip = {};
 
         vm.errorMessage = "";
+        vm.isBusy = true;
 
         $http.get("/api/trips")
-            .then(function(response) {
+            .then(function (response) {
                 angular.copy(response.data, vm.trips);
-            }, function(error) {
+            }, function (error) {
                 vm.errorMessage = "Failed to load date: " + error;
+            })
+            .finally(function () {
+                vm.isBusy = false;
             });
 
         vm.addTrip = function () {
-            vm.trips.push({
-                name: vm.newTrip.name,
-                created: new Date()
-            });
+            vm.isBusy = true;
+            vm.errorMessage = "";
 
-            vm.newTrip = {};
+            $http.post("/api/trips", vm.newTrip)
+                .then(function (response) {
+                    vm.trips.push(response.data);
+                    vm.newTrip = {};
+                }, function () {
+                    vm.errorMessage = "Could not create new trip: " + error;
+                })
+                .finally(function () {
+                    vm.isBusy = false;
+                });
         };
     }
 })();
